@@ -1,14 +1,35 @@
- # 📜 Spectral_Analyzer_Zedboard_S8
+# Modular_Threaded_Event_Coordinator_PECHEUX_S8
 
-Spectral_Analyzer_Zedboard_S8 is a co-design and architecture project. The project aims to design and implement a real-time spectrum analyzer using a Zedboard FPGA and Vivado for hardware development.
+A modular C-based server component showcasing operating system-level concurrency and synchronization mechanisms. It supports coordinated asynchronous communication between multiple clients using threads, sockets, mutexes, and a finite state machine (FSM).
 
-The system processes audio signals through an I2S interface, stores data in DDR memory, performs FFT computation, and displays the frequency spectrum on a VGA screen. The data transfer between components is managed via DMA, optimizing performance.
+![Readme illustration](./Useful_Resources/Images_ReadME/Read_ME_0.png.gif)
 
-## 📋 The project includes:
+---
 
-  **+** RTL development and simulation using Xilinx tools
-  **+** Bare-metal prototyping for low-level validation
-  **+** Linux driver development to interface with FPGA components
-  **+** Application development on an embedded Linux system using Buildroot
+## ⚙️ Repository Structure
 
-This project leverages hardware acceleration on FPGA to perform efficient spectral analysis, demonstrating an optimized hardware-software codesign approach.
+The repository is organized as follows:
+
++ 🗂️ **[`Example_Application`](./Example_Application)** – A minimal demonstration scenario to test and explore the system behavior in a practical context.
+
++ 🗂️ **[`Useful_Resources`](./Useful_Resources)** – Contains visual resources and diagrams used in the documentation (FSM, sequence diagrams, architecture, etc.).
+
++ 🗂️ **[`Demo_Video`](./Demo_Video)** – Includes video demonstrations to visually showcase the coordinator's behavior and OS concepts in action.
+
++ 📄 **`Vladislav_Levovitch_OS_Report.md`** – A technical report detailing the design choices and explaining how system-level OS concepts were applied.
+
++ ⚖️​ **`LICENSE`** : This project is licensed under the GNU GPL v3.
+
+
+---
+
+## 🛠️ General Instructions - 🧪 Example Application
+
+The **[`Example_Application`](./Example_Application)** folder contains a self-contained use case to test the modular coordinator. This use case simulates multiple clients connecting to the server, interacting under the control of a shared FSM and triggering internal transitions.
+
+### Dependencies
+This project uses SDL2 for minimal graphical output and event handling simulation.
+
+```bash
+sudo apt update
+sudo apt install libsdl2-dev libsdl2-image-dev libsdl2-ttf-dev
