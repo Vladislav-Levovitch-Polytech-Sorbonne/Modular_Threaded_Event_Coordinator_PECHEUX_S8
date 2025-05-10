@@ -21,15 +21,17 @@ all: $(SERVER_EXE) $(CLIENT_EXE)
 $(SERVER_EXE): $(SERVER_SRC)
 	@echo "[🔧] Compiling server..."
 	$(CC) $(CFLAGS) -o $@ $<
-	@echo "[✅] Server ready: $(notdir $@)"
+	@echo "[✅] Server ready : $(notdir $@)"
 
 $(CLIENT_EXE): $(CLIENT_SRC)
 	@echo "[🔧] Compiling client..."
 	$(CC) $(CFLAGS) -o $@ $<
-	@echo "[✅] Client ready: $(notdir $@)"
+	@echo "[✅] Client ready : $(notdir $@)"
 
 clean:
 	@echo "[🧹] Cleaning build artifacts..."
 	rm -f $(BUILD_DIR)/*.exe
 	rm -f *.o
 	@echo "[✔️ ] Cleanup complete."
+
+# With ChatGPT's help 
