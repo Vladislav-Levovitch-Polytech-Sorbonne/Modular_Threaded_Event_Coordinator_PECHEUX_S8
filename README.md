@@ -1,3 +1,4 @@
+![Bannière](./Useful_Resources/Images_ReadME/banner.png)
 # Modular_Threaded_Event_Coordinator_PECHEUX_S8
 
 A modular C-based server component showcasing operating system-level concurrency and synchronization mechanisms. It supports coordinated asynchronous communication between multiple clients using threads, sockets, mutexes, and a finite state machine (FSM).
