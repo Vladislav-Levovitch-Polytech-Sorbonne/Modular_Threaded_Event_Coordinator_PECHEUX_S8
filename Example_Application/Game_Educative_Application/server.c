@@ -339,16 +339,16 @@ int main(int argc, char *argv[])
 		switch (buffer[0])
 		{
             case 'G':
-				// RAJOUTER DU CODE ICI
+				// if (guiltSel!=-1)
 				break;
             case 'O':
-				// RAJOUTER DU CODE ICI
+				// if ((objetSel!=-1) && (joueurSel==-1))
 				break;
 			case 'S':
-				// RAJOUTER DU CODE ICI
+				// ((objetSel!=-1) && (joueurSel!=-1))
 				break;
-                	default:
-                        	break;
+			default:
+					break;
 		}
         }
      	close(newsockfd);
