@@ -1,6 +1,6 @@
  ![Bannière](./Useful_Resources/Images_ReadME/banner.png)
  # Modular_Threaded_Event_Coordinator_PECHEUX_S8
- # 📜 Technical Report – Networked Reactive System with FSM Control
+ # 📜 Technical Report - Networked Reactive System with FSM Control
 
 ## Introduction
 
@@ -20,46 +20,71 @@ The server uses multiple **POSIX threads** to handle each client independently, 
 
 ## General Communication Architecture
 
-### ![Figure 1 – General Communication Architecture](./Useful_Resources/Images_ReadME/figure1_comm_architecture.jpg)
+### ![Figure 1 - General Communication Architecture](./Useful_Resources/Images_ReadME/figure1_comm_architecture.jpg)
 à passer en anglais
 
-This diagram illustrates the core structure of communication between components. At the center is the **main server**, responsible for maintaining the FSM and dispatching state updates. Four clients - Alice, Bob, Charlie, and David - connect to the server. Each client is associated with a **local mini-server**, a passive listener designed to handle incoming messages from the server asynchronously.
+This diagram illustrates the core structure of communication between components. At the center is the **main server**, responsible for maintaining the FSM and dispatching state updates. Four clients - Alice, Bob, Charlie, and Donald - connect to the server. Each client is associated with a **local mini-server**, a passive listener designed to handle incoming messages from the server asynchronously.
 
 The green dotted arrows symbolize **state broadcasts** or multi-client responses triggered by the server after processing a message. Red solid arrows represent **client-initiated actions**, such as connection requests or interaction commands. The "thread" and "cookies" notes refer to the server's multithreading logic and internal session/state management, respectively.
 
+### 🧵 Multithreading and State Tracking (**"Cookies"**)
+
+The mention of *"cookies"* in this context is metaphorical. Just like web servers use cookies to **remember a user’s session** across multiple HTTP requests, our central server internally maintains **persistent information about each client** across different interactions. These include the client's :
+- `Name`, Unique identifier (`ID`), Assigned `cards` or `objects`, `Connection status` and `Turn progression` 
+
+This is crucial in a multithreaded architecture where the server spawns a **dedicated thread for each connected client**. Without this internal tracking (akin to a **cookie mechanism**), the server wouldn't be able to __personalize responses__ or __keep consistency in shared state__.
+
+For instance, when a client receives a message such as :
+- `D 1 3 5` - the server is distributing specific items (like cards) to that client.
+- `V 1 1 1` - the server replies that client 1 holds object 1 exactly once.
+- `M 1` - the server tells everyone that it’s client 1’s turn.
+
+These messages are tailored to each client's internal session data. This “cookie-like” memory is what enables the system to behave coherently and synchronously, even under concurrent execution with threads.
+
+### 🔌 Socket-Based Micro-Servers and Communication Model
+
+Every client connects to the server through a **dedicated socket**, and from a design point of view, the main server can be imagined as **hosting four mini-servers internally** - one per active client. Each socket is paired with a thread, ensuring that all clients can communicate independently and simultaneously.
+
+Once connected, a client has a persistent communication channel with the server :
+- The server uses `send()` to **push messages** to a specific client.
+- It can **broadcast** updates by writing to all sockets (e.g., when informing everyone of a new turn).
+- Each thread reads from its socket using `recv()`, allowing real-time reactions to client actions.
+
+This architecture allows the server to function like a **parallel dispatcher**, where each socket acts like a port to a virtual micro-service. These sockets and threads, combined with internal session tracking (the “cookies”), give the system robustness and flexibility for managing interactive, real-time multi-user logic.
+
 ---
 
-## Sequence Diagram: Connection Flow
+## Sequence Diagram : Connection Flow
 
-### ![Figure 2 – Connection and Initialization Sequence](./Useful_Resources/Images_ReadME/figure2_sequence_connection.jpg)
+### ![Figure 2 - Connection and Initialization Sequence](./Useful_Resources/Images_ReadME/figure_2_sequence_connection.jpg)
 à complété eventuellement avec les étapes suivantes du process (investigation, tentative, fin de jeu) mais c'est long ... 
 
-This sequence diagram presents a detailed view of the initial connection phase and illustrates how the server responds to each new client. Below is a simplified version of the interaction timeline:
+This sequence diagram presents a detailed view of the initial connection phase and illustrates how the server responds to each new client. Below is a simplified version of the interaction timeline :
 
 
-1. **Client Charlie**: `C localhost 32003 Charlie`:
-   - Server responds with `0\n`,
-   - Sends `L Charlie - - - \n` to Alice.
+1. **Client Charlie** sends `C localhost 32003 Charlie` :
+   - Server responds with `I 0\n`,
+   - Sends `L Charlie - - - \n` to Charlie.
 
-2. **Client Alice** sends `C localhost 32001 Alice`. The server responds with:
-   - `1\n` (client ID),
+2. **Client Alice** sends `C localhost 32001 Alice`. The server responds with :
+   - `I 1\n` (client ID),
    - `L Charlie Alice - - \n` to both Charlie and Alice.
 
-3. **Client Bob** connects: `C localhost 32002 Bob`. The server sends:
-   - `2\n` to Bob,
+3. **Client Bob** sends : `C localhost 32002 Bob`. The server sends :
+   - `I 2\n` to Bob,
    - `L Charlie Alice Bob - \n` to Bob, Alice and Charlie.
 
-4. **Client Donald**: `C localhost 32004 Donald`:
-   - Responds with `3\n`,
+4. **Client Donald** sends : `C localhost 32004 Donald` :
+   - Responds with `I 3\n`,
    - Broadcasts `L Charlie Alice Bob Donald \n`. to all clients.
 
 The key takeaway is how **each new client triggers a full-state update**, sent to **all previously connected clients**, ensuring that every client holds the most recent global state.
 
-This diagram also highlights **threaded event management**: for each connection, the server spawns or delegates to a **thread, locks a mutex** during state modification, and triggers appropriate responses via a shared communication buffer.
+This diagram also highlights **threaded event management** : for each connection, the server spawns or delegates to a **thread, locks a mutex** during state modification, and triggers appropriate responses via a shared communication buffer.
 
 ---
 
-## Titre 3 if need 
+## Titre 3 maybe something with TCP / Socket google graph ? 
 ### Figure 3 à voir si inspi
 Texte texte loren sum 
 

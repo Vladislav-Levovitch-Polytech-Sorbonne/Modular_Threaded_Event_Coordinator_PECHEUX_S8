@@ -301,36 +301,48 @@ int main(int argc, char ** argv)
 
         if (synchro==1)
         {
-                printf("consomme |%s|\n",gbuffer);
-		switch (gbuffer[0])
-		{
-			// Message 'I' : le joueur recoit son Id
-			case 'I':
-				// RAJOUTER DU CODE ICI
+			printf("consomme |%s|\n",gbuffer);
+			switch (gbuffer[0])
+			{
+				// Message 'I' : le joueur recoit son Id
+				case 'I':
+					sscanf(gbuffer + 2, "%d", &gId);
+					printf("[DEBUG] Received client <ID> : %d\n", gId);
+					// "I gId"
+					break;
+				// Message 'L' : le joueur recoit la liste des joueurs
+				case 'L':
+					sscanf(gbuffer + 2, "%s %s %s %s", gNames[0], gNames[1], gNames[2], gNames[3]);
+					printf("[DEBUG] Connected clients : %s, %s, %s, %s\n", gNames[0], gNames[1], gNames[2], gNames[3]);
+					// "L gNames_1 gNames_2 gNames_3 gNames_4"
+					break;
+				// Message 'D' : le joueur recoit ses trois cartes
+				case 'D':
+					sscanf(gbuffer + 2, "%d %d %d", &b[0], &b[1], &b[2]);
+					printf("[DEBUG] Received info : %d, %d, %d\n", b[0], b[1], b[2]);
+					// "D b_0 b_1 b_2"
+					initObjets();
+					break;
 
-				break;
-			// Message 'L' : le joueur recoit la liste des joueurs
-			case 'L':
-				// RAJOUTER DU CODE ICI
-
-				break;
-			// Message 'D' : le joueur recoit ses trois cartes
-			case 'D':
-				// RAJOUTER DU CODE ICI
-
-				break;
-			// Message 'M' : le joueur recoit le n° du joueur courant
-			// Cela permet d'affecter goEnabled pour autoriser l'affichage du bouton go
-			case 'M':
-				// RAJOUTER DU CODE ICI
-
-				break;
-			// Message 'V' : le joueur recoit une valeur de tableCartes
-			case 'V':
-				// RAJOUTER DU CODE ICI
-
-				break;
-		}
+				// Message 'M' : le joueur recoit le n° du joueur courant
+				// Cela permet d'affecter goEnabled pour autoriser l'affichage du bouton go
+				case 'M':
+					int current_client;
+					sscanf(gbuffer + 2, "%d", &current_client);
+					goEnabled = (current_client == gId);
+					printf("[DEBUG] Current turn : %d ( goEnabled = %d)\n", current_client, goEnabled);
+					break;
+				// Message 'V' : le joueur recoit une valeur de tableCartes
+				case 'V':
+					int client, object, value;
+					sscanf(gbuffer + 2, "%d %d %d", &client, &object, &value);
+					if (tableCartes[client][object] == -1) 
+					{
+						tableCartes[client][object] = value;
+						printf("[DEBUG] Global_info[%d]:[%d] = %d\n", client, object, value);
+					}
+					break;
+			}
 		synchro=0;
         }
 
