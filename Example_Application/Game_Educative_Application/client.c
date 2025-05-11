@@ -240,8 +240,6 @@ int main(int argc, char ** argv)
 				if ((mx<200) && (my<50) && (connectEnabled==1))
 				{
 					sprintf(sendBuffer,"C %s %d %s",gClientIpAddress,gClientPort,gName);
-
-					// RAJOUTER DU CODE ICI
 					sendMessageToServer(gServerIpAddress,gServerPort,sendBuffer);
 
 					connectEnabled=0;

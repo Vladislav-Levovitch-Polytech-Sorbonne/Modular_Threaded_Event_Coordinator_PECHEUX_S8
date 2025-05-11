@@ -336,20 +336,84 @@ int main(int argc, char *argv[])
 	}
 	else if (fsmServer==1)
 	{
+		int id, id_client_proposed, object, client;
+		int shouldAdvance = 0; // Used to determine if we need to move to the next client
+
 		switch (buffer[0])
 		{
-            case 'G':
-				// if (guiltSel!=-1)
+			case 'G': // if (guiltSel!=-1)
+				// Format: G <client_id> <target_client_id>
+				if (sscanf(buffer, "G %d %d", &id, &id_client_proposed) == 2) 
+				{
+					// Check if the proposed client is the correct one
+					if (id_client_proposed == deck[12]) 
+					{
+						sprintf(reply, "W %d", id); // Notify all clients of success
+						broadcastMessage(reply);
+					} 
+					else 
+					{
+						shouldAdvance = 1; // Wrong guess, we move to the next client
+					}
+				} 
+				else 
+				{
+					// Parsing error // Gpt recommendation
+					fprintf(stderr, "[Error] Invalid 'G' command format: %s\n", buffer);
+				}
 				break;
-            case 'O':
-				// if ((objetSel!=-1) && (joueurSel==-1))
+
+			case 'O': // if ((objetSel!=-1) && (joueurSel==-1))
+				// Format: O <client_id> <object_id>
+				if (sscanf(buffer, "O %d %d", &id, &object) == 2) 
+				{
+					// Check if other clients have the requested object
+					for (int i = 0; i < 4; i++) 
+					{
+						if (i != id && tableCartes[i][object] == 0) 
+						{
+							sprintf(reply, "V %d %d 0", i, object); // Share object visibility info
+							broadcastMessage(reply);
+						}
+					}
+					shouldAdvance = 1;
+				} 
+				else 
+				{
+					fprintf(stderr, "[Error] Invalid 'O' command format: %s\n", buffer);
+				}
 				break;
+
 			case 'S':
-				// ((objetSel!=-1) && (joueurSel!=-1))
+				// Format: S <client_id> <target_client_id> <object_id>
+				if (sscanf(buffer, "S %d %d %d", &id, &client, &object) == 3) 
+				{
+					// Reveal the specific value of an object owned by another client
+					int val = tableCartes[client][object];
+					sprintf(reply, "V %d %d %d", client, object, val);
+					sendMessageToClient(tcpClients[id].ipAddress, tcpClients[id].port, reply);
+					shouldAdvance = 1;
+				} 
+				else 
+				{
+					fprintf(stderr, "[Error] Invalid 'S' command format: %s\n", buffer);
+				}
 				break;
+
 			default:
-					break;
+				// Unknown command received
+				fprintf(stderr, "[Error] Unknown command: %s\n", buffer); // The suggested messages for invalid cases were proposed by GPT including elses and default messages
+				break;
 		}
+
+		// Common block to move to the next client's turn if needed
+		if (shouldAdvance) 
+		{
+			joueurCourant = (joueurCourant + 1) % 4; // Ensure rotation among clients 0-3 - Protection against access to a non-existent client
+			sprintf(reply, "M %d", joueurCourant); // Notify all clients whose turn it is
+			broadcastMessage(reply);
+		}
+
         }
      	close(newsockfd);
      }
