@@ -39,7 +39,7 @@ sudo apt install libsdl2-dev libsdl2-image-dev libsdl2-ttf-dev
 make
 ```
 
-## Useful links and Acknowledgments
+## 💌​ Useful links and Acknowledgments
 
 Ressources internet utilisées : https://www.geeksforgeeks.org/socket-programming-in-cpp/
 https://www.codequoi.com/threads-mutex-et-programmation-concurrente-en-c/ version cpp disponible ici https://bousk.developpez.com/cours/reseau-c++/TCP/01-premiers-pas/
