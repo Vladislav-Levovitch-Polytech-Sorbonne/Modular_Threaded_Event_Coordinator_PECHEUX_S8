@@ -25,7 +25,7 @@ $(SERVER_EXE): $(SERVER_SRC)
 
 $(CLIENT_EXE): $(CLIENT_SRC)
 	@echo "[🔧] Compiling client..."
-	$(CC) $(CFLAGS) -o $@ $<
+	$(CC) $(CFLAGS) -o $@ $< -lSDL2 -lSDL2_image -lSDL2_ttf
 	@echo "[✅] Client ready : $(notdir $@)"
 
 clean:
