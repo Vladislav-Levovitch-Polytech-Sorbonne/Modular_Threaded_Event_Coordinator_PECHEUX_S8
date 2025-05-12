@@ -21,7 +21,6 @@ The server uses multiple **POSIX threads** to handle each client independently, 
 ## General Communication Architecture
 
 ### ![Figure 1 - General Communication Architecture](./Useful_Resources/Images_ReadME/figure1_comm_architecture.jpg)
-à passer en anglais
 
 This diagram illustrates the core structure of communication between components. At the center is the **main server**, responsible for maintaining the FSM and dispatching state updates. Four clients - Alice, Bob, Charlie, and Donald - connect to the server. Each client is associated with a **local mini-server**, a passive listener designed to handle incoming messages from the server asynchronously.
 
@@ -57,7 +56,6 @@ This architecture allows the server to function like a **parallel dispatcher**, 
 ## Sequence Diagram : Connection Flow
 
 ### ![Figure 2 - Connection and Initialization Sequence](./Useful_Resources/Images_ReadME/figure_2_sequence_connection.jpg)
-à complété eventuellement avec les étapes suivantes du process (investigation, tentative, fin de jeu) mais c'est long ... 
 
 This sequence diagram presents a detailed view of the initial connection phase and illustrates how the server responds to each new client. Below is a simplified version of the interaction timeline :
 
