@@ -82,9 +82,56 @@ This diagram also highlights **threaded event management** : for each connection
 
 ---
 
-## Titre 3 maybe something with TCP / Socket google graph ? 
-### Figure 3 à voir si inspi
-Texte texte loren sum 
+## Implementation and System Concepts
+
+In this section, we detail how the program was built, highlighting the use of various concepts explored during the practical sessions.
+
+The project relies on a client-server architecture with message exchanges via sockets. The server is designed to handle multiple clients concurrently, with each client being managed by a dedicated thread. This model *suppose to* ensures server responsiveness, even when clients take time to respond or perform long actions.
+
+### Socket Management
+
+The server uses a TCP socket to listen for incoming connections. The `socket()` function creates a socket, which is then bound to an address and port using `bind()`. The server enters listen mode with `listen()` and waits for connections. When a client attempts to connect, the server accepts the connection using the `accept()` function, which returns a new communication socket specific to that connection. For each new connection, a thread is created using the `pthread_create()` function to handle that connection in isolation.
+
+Each thread executes the `client_handler()` function, which receives the messages sent by the client and processes them based on the server’s current state (managed by a Finite State Machine, FSM). This mechanism allows each client to communicate independently with the server.
+
+### Synchronization with Mutex
+
+Since multiple threads may access the same shared data (e.g., the list of clients or the server's state), synchronization mechanisms are necessary to avoid race conditions. A mutex is used to ensure that modifications to shared data are done exclusively.
+
+This locking mechanism secures simultaneous access to shared resources such as game state management or card distribution, ensuring data consistency and avoiding undefined behaviors.
+
+### Processes and Communication with Pipes
+
+While using threads is preferred in this project for its simplicity and speed, it is also possible to use processes and pipes for inter-process communication. In this case, each client could be handled in a separate process, further isolating interactions. However, given the simplified project model, a thread-based approach was chosen.
+
+If processes had been used, each client process would be created via the fork() function, and communication between the server and its child processes could be done via named or anonymous pipes. Here's an example of creating a pipe between a parent and a child :
+```c
+int pipefd[2];
+pipe(pipefd);
+pid_t pid = fork();
+
+if (pid == 0) 
+{
+    // Code executed by the child process
+    close(pipefd[0]);
+    write(pipefd[1], "Message", 7);
+    close(pipefd[1]);
+} 
+else 
+{
+    // Code executed by the parent process
+    close(pipefd[1]);
+    char buffer[100];
+    read(pipefd[0], buffer, sizeof(buffer));
+    close(pipefd[0]);
+} 
+//Merci source Xioachen largement repris pour cette section
+```
+In this example, a pipe is created with pipe(), then a child process is generated with fork(). The child process sends a message to the parent process via the pipe, and the parent reads the message. While this approach is interesting for managing separate processes, it introduces additional complexity in terms of resource management and synchronization.
+
+### Finite State Machine (FSM)
+
+The server operates according to a Finite State Machine (FSM) model, which guides the evolution of its state based on the messages received. For example, in state 0, the server waits for client connections, while in state 1, the game is active, and players' actions are processed. State 2 represents the end of the game. This structure allows for the management of state transitions in an organized and predictable manner, which is essential for maintaining system consistency in a concurrent environment.
 
 ---
 
@@ -93,8 +140,3 @@ Texte texte loren sum
 Beyond the educational context and game-like framing, this project demonstrates the skeleton of a **real-time, concurrent client-server model**, highly applicable to modern systems. In **IoT infrastructures**, a centralized server coordinating sensor data streams from multiple devices could employ this same model. Clients (sensors) report data, and the server responds or broadcasts state changes across the network - all handled through thread-safe queues, FSMs for state validation, and asynchronous notification mechanisms. With adaptations, this could serve as a **base for smart home systems**, **monitoring platforms**, or **data aggregation pipelines** in distributed control systems.
 
 Another relevant application lies in the realm of **collaborative tools** or **real-time multiplayer engines**, where many clients interact through actions that must be validated, sequenced, and rebroadcast. The FSM structure guarantees deterministic responses, while socket communication ensures scalability. By abstracting away the game-specific protocol and focusing on the architecture, this system becomes a potential **foundation for chat servers**, **interactive learning platforms**, or even **networked industrial control**. Its modularity makes it extendable with authentication, database logging, or persistent sessions using techniques such as forking processes or using named pipes for IPC.
-
----
-
-## Conclusion
-... Revenir ici Come back after last "ici code"

@@ -3,7 +3,7 @@
 
 A modular C-based server component showcasing operating system-level concurrency and synchronization mechanisms. It supports coordinated asynchronous communication between multiple clients using threads, sockets, mutexes, and a finite state machine (FSM).
 
-![Readme illustration](./Useful_Resources/Images_ReadME/Read_ME_0.png.gif)
+![Readme illustration](./Useful_Resources/Images_ReadME/Read_ME_1.png)
 
 ---
 
