@@ -12,7 +12,8 @@ SERVER_EXE := $(BUILD_DIR)/1_server_begin_0.exe
 CLIENT_EXE := $(BUILD_DIR)/2_client_begin_1_2_3.exe
 
 CC := gcc
-CFLAGS := -Wall
+#CFLAGS := -Wall # 🤫 Better without flags : )
+CFLAGS :=
 
 .PHONY: all clean
 
